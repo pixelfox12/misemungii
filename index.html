@@ -1008,12 +1008,19 @@ function renderTable(data){
 
 }
 
-// =====================
-// PM10 수정
-// =====================
+<!-- =====================
+PM10 수정
+===================== -->
 
 window.editPM10 =
 async function(index, value){
+
+  const section =
+    document.getElementById("editSection");
+
+  if(section.style.display !== "block"){
+    return;
+  }
 
   const date =
     document.getElementById("dateSelector")
@@ -1027,12 +1034,20 @@ async function(index, value){
   loadDateData();
 
 }
+
 // =====================
 // PM2.5 수정
 // =====================
 
 window.editPM25 =
 async function(index, value){
+
+  const section =
+    document.getElementById("editSection");
+
+  if(section.style.display !== "block"){
+    return;
+  }
 
   const date =
     document.getElementById("dateSelector")
