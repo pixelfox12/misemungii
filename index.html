@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>미세먼지 관리 시스템</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#f4f4f4;
+}
+
+header{
+  background:#2563eb;
+  color:white;
+  padding:20px;
+  text-align:center;
+  font-size:28px;
+  font-weight:bold;
+}
+
+nav{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  background:white;
+  padding:15px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+nav button{
+  padding:12px 24px;
+  border:none;
+  border-radius:10px;
+  background:#2563eb;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.page{
+  display:none;
+  padding:25px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.active{
+  display:block;
+}
+
+.card{
+  background:white;
+  border-radius:12px;
+  padding:20px;
+  box-shadow:0 0 10px rgba(0,0,0,0.08);
+}
+
+.top-area{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.toggle-btn{
+  background:#444;
+  color:white;
+  border:none;
+  padding:10px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.mode-buttons{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.mode-buttons button{
+  padding:10px 18px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  color:white;
+  font-weight:bold;
+}
+
+.pm10-btn{
+  background:#3b82f6;
+}
+
+.pm25-btn{
+  background:#ef4444;
+}
+
+input{
+  padding:10px;
+  width:100%;
+  box-sizing:border-box;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+th, td{
+  border:1px solid #ccc;
+  padding:10px;
+  text-align:center;
+}
+
+td input{
+  border:none;
+  text-align:center;
+  background:transparent;
+}
+
+td input:focus{
+  outline:2px solid #2563eb;
+  background:#eef6ff;
+}
+
+#editSection{
+  display:none;
+}
+
+#infoEditSection{
+  display:none;
+  margin-top:20px;
+}
+
+.status-box{
+  margin-top:20px;
+  padding:15px;
+  border-radius:10px;
+  background:#eef4ff;
+  line-height:1.8;
+}
+
+.max-value{
+  margin-top:15px;
+  font-size:18px;
+  font-weight:bold;
+  color:#7c3aed;
+}
+
+canvas{
+  margin-top:30px;
+}
+
+.info-block{
+  margin-bottom:25px;
+}
+
+.delete-btn{
+  background:#dc2626;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  미세먼지 관리 시스템
+</header>
+
+<nav>
+
+  <button onclick="showPage('infoPage')">
+    미세먼지 정보
+  </button>
+
+  <button onclick="showPage('graphPage')">
+    날짜별 그래프
+  </button>
+
+</nav>
+
+<!-- 정보 페이지 -->
+
+<div id="infoPage" class="page active">
+
+  <div class="card">
+
+    <div
+      style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        flex-wrap:wrap;
+        gap:10px;
+      "
+    >
+
+      <h2>미세먼지 정보</h2>
+
+      <div
+        style="
+          display:flex;
+          gap:10px;
+          flex-wrap:wrap;
+        "
+      >
+
+        <button
+          class="toggle-btn"
+          onclick="addInfoBlock()"
+        >
+          정보 추가
+        </button>
+
+        <button
+          class="toggle-btn"
+          onclick="toggleInfoEdit()"
+        >
+          정보 수정 열기
+        </button>
+
+      </div>
+
+    </div>
+
+    <div id="infoDisplay"></div>
+
+    <div id="infoEditSection">
+
+      <div id="infoEditContainer"></div>
+
+      <button
+        class="toggle-btn"
+        style="margin-top:15px;"
+        onclick="saveInfo()"
+      >
+        정보 저장
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- 그래프 페이지 -->
+
+<div id="graphPage" class="page">
+
+  <div class="card">
+
+    <h2>날짜별 미세먼지 그래프</h2>
+
+    <div class="top-area">
+
+      <label>날짜 선택:</label>
+
+      <input
+        type="date"
+        id="dateSelector"
+        onchange="loadDateData()"
+        style="width:auto;"
+      >
+
+      <button
+        class="toggle-btn"
+        onclick="toggleEdit()"
+      >
+        데이터 수정 열기
+      </button>
+
+    </div>
+
+    <div class="mode-buttons">
+
+      <button
+        class="pm10-btn"
+        onclick="changeMode('pm10')"
+      >
+        PM10 그래프
+      </button>
+
+      <button
+        class="pm25-btn"
+        onclick="changeMode('pm25')"
+      >
+        PM2.5 그래프
+      </button>
+
+    </div>
+
+    <div class="status-box" id="statusText"></div>
+
+    <div class="max-value" id="maxValueText"></div>
+
+    <div id="editSection">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>교시</th>
+
+            <th>PM10 (μm/m²)</th>
+
+            <th>PM2.5 (μm/m²)</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="dataTable"></tbody>
+
+      </table>
+
+    </div>
+
+    <canvas id="chart"></canvas>
+
+  </div>
+
+</div>
+
+<script>
+
+// =====================
+// 비밀번호
+// =====================
+
+const ADMIN_PASSWORD = "1234";
+
+// =====================
+// 페이지 전환
+// =====================
+
+function showPage(pageId){
+
+  document.querySelectorAll(".page")
+    .forEach(page=>{
+      page.classList.remove("active");
+    });
+
+  document.getElementById(pageId)
+    .classList.add("active");
+}
+
+// =====================
+// 정보 데이터
+// =====================
+
+let infoData =
+  JSON.parse(localStorage.getItem("infoData"))
+  ||
+  [
+
+    {
+      title:"미세먼지란?",
+      content:"미세먼지는 공기 중에 떠다니는 작은 먼지 입자이다."
+    },
+
+    {
+      title:"PM10",
+      content:"PM10은 미세먼지를 의미한다."
+    },
+
+    {
+      title:"PM2.5",
+      content:"PM2.5는 초미세먼지를 의미한다."
+    }
+
+  ];
+
+// =====================
+// 정보 표시
+// =====================
+
+function renderInfo(){
+
+  const display =
+    document.getElementById("infoDisplay");
+
+  const editContainer =
+    document.getElementById("infoEditContainer");
+
+  display.innerHTML = "";
+
+  editContainer.innerHTML = "";
+
+  infoData.forEach((info,index)=>{
+
+    const block =
+      document.createElement("div");
+
+    block.className = "info-block";
+
+    block.innerHTML = `
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          gap:10px;
+          flex-wrap:wrap;
+        "
+      >
+
+        <h3>${info.title}</h3>
+
+        ${
+          document.getElementById("infoEditSection")
+          .style.display === "block"
+
+          ?
+
+          `
+
+          <button
+            class="delete-btn"
+            onclick="deleteInfoBlock(${index})"
+          >
+            삭제
+          </button>
+
+          `
+
+          :
+
+          ""
+
+        }
+
+      </div>
+
+      <p>${info.content}</p>
+
+    `;
+
+    display.appendChild(block);
+
+    const editBlock =
+      document.createElement("table");
+
+    editBlock.style.marginBottom = "20px";
+
+    editBlock.innerHTML = `
+
+      <tr>
+
+        <th>제목</th>
+
+        <td>
+
+          <input
+            type="text"
+            id="editTitle${index}"
+            value="${info.title}"
+          >
+
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <th>내용</th>
+
+        <td>
+
+          <input
+            type="text"
+            id="editContent${index}"
+            value="${info.content}"
+          >
+
+        </td>
+
+      </tr>
+
+    `;
+
+    editContainer.appendChild(editBlock);
+
+  });
+
+}
+
+// =====================
+// 정보 삭제
+// =====================
+
+function deleteInfoBlock(index){
+
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
+
+  if(password === null){
+    return;
+  }
+
+  if(password !== ADMIN_PASSWORD){
+
+    alert("비밀번호가 틀렸습니다.");
+
+    return;
+  }
+
+  const check =
+    confirm("정말 삭제하시겠습니까?");
+
+  if(!check){
+    return;
+  }
+
+  infoData.splice(index,1);
+
+  localStorage.setItem(
+    "infoData",
+    JSON.stringify(infoData)
+  );
+
+  renderInfo();
+
+}
+
+// =====================
+// 정보 수정창
+// =====================
+
+function toggleInfoEdit(){
+
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
+
+  if(password === null){
+    return;
+  }
+
+  if(password !== ADMIN_PASSWORD){
+
+    alert("비밀번호가 틀렸습니다.");
+
+    return;
+  }
+
+  const section =
+    document.getElementById("infoEditSection");
+
+  if(section.style.display === "none"){
+    section.style.display = "block";
+  }
+  else{
+    section.style.display = "none";
+  }
+
+  renderInfo();
+
+}
+
+// =====================
+// 정보 저장
+// =====================
+
+function saveInfo(){
+
+  infoData.forEach((info,index)=>{
+
+    info.title =
+      document.getElementById(`editTitle${index}`)
+      .value;
+
+    info.content =
+      document.getElementById(`editContent${index}`)
+      .value;
+
+  });
+
+  localStorage.setItem(
+    "infoData",
+    JSON.stringify(infoData)
+  );
+
+  renderInfo();
+
+  if(
+    document.getElementById("infoEditSection")
+    .style.display === "block"
+  ){
+    renderInfo();
+  }
+
+  alert("정보가 저장되었습니다.");
+
+}
+
+// =====================
+// 정보 추가
+// =====================
+
+function addInfoBlock(){
+
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
+
+  if(password === null){
+    return;
+  }
+
+  if(password !== ADMIN_PASSWORD){
+
+    alert("비밀번호가 틀렸습니다.");
+
+    return;
+  }
+
+  infoData.push({
+
+    title:"새로운 제목",
+
+    content:"새로운 내용을 입력하세요."
+
+  });
+
+  localStorage.setItem(
+    "infoData",
+    JSON.stringify(infoData)
+  );
+
+  renderInfo();
+
+}
+
+// =====================
+// 데이터 수정창
+// =====================
+
+function toggleEdit(){
+
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
+
+  if(password === null){
+    return;
+  }
+
+  if(password !== ADMIN_PASSWORD){
+
+    alert("비밀번호가 틀렸습니다.");
+
+    return;
+  }
+
+  const section =
+    document.getElementById("editSection");
+
+  if(section.style.display === "none"){
+    section.style.display = "block";
+  }
+  else{
+    section.style.display = "none";
+  }
+
+}
+
+// =====================
+// 현재 모드
+// =====================
+
+let currentMode = "pm10";
+
+// =====================
+// 교시
+// =====================
+
+const periods = [
+  "1교시",
+  "2교시",
+  "3교시",
+  "4교시",
+  "5교시",
+  "6교시",
+  "7교시"
+];
+
+// =====================
+// 데이터
+// =====================
+
+const allData =
+  JSON.parse(localStorage.getItem("allData"))
+  ||
+  {
+
+    "2026-05-13": {
+
+      pm10:[42,38,50,61,58,47,39],
+
+      pm25:[21,19,30,35,32,25,20]
+
+    }
+
+  };
+
+// =====================
+// 날짜 기본값
+// =====================
+
+document.getElementById("dateSelector")
+  .value = "2026-05-13";
+
+// =====================
+// 그래프
+// =====================
+
+const ctx =
+  document.getElementById("chart");
+
+const chart = new Chart(ctx, {
+
+  type:"line",
+
+  data:{
+
+    labels:periods,
+
+    datasets:[
+
+      {
+        label:"",
+        data:[],
+        borderWidth:3,
+        tension:0.2,
+
+        pointRadius:6,
+        pointHoverRadius:8,
+
+        pointBackgroundColor:[],
+        pointBorderColor:[],
+        pointBorderWidth:3
+      },
+
+      {
+        label:"좋음",
+        data:[],
+        borderDash:[8,8],
+        pointRadius:0,
+        borderWidth:2
+      },
+
+      {
+        label:"보통",
+        data:[],
+        borderDash:[8,8],
+        pointRadius:0,
+        borderWidth:2
+      },
+
+      {
+        label:"나쁨",
+        data:[],
+        borderDash:[8,8],
+        pointRadius:0,
+        borderWidth:2
+      },
+
+      {
+        label:"하루 최고 수치",
+        data:[],
+        borderColor:"#7c3aed",
+        borderDash:[5,5],
+        pointRadius:0,
+        borderWidth:3
+      }
+
+    ]
+
+  },
+
+  options:{
+
+    responsive:true,
+
+    scales:{
+
+      y:{
+
+        beginAtZero:true,
+
+        suggestedMax:160,
+
+        title:{
+          display:true,
+          text:"농도 (μm/m²)"
+        }
+
+      }
+
+    }
+
+  }
+
+});
+
+// =====================
+// 그래프 변경
+// =====================
+
+function changeMode(mode){
+
+  currentMode = mode;
+
+  loadDateData();
+
+}
+
+// =====================
+// 데이터 불러오기
+// =====================
+
+function loadDateData(){
+
+  const selectedDate =
+    document.getElementById("dateSelector")
+    .value;
+
+  if(!allData[selectedDate]){
+
+    allData[selectedDate] = {
+
+      pm10:[0,0,0,0,0,0,0],
+
+      pm25:[0,0,0,0,0,0,0]
+
+    };
+
+  }
+
+  const data =
+    allData[selectedDate];
+
+  let graphData = [];
+  let color = "";
+  let good = 0;
+  let normal = 0;
+  let bad = 0;
+
+  if(currentMode === "pm10"){
+
+    graphData = data.pm10;
+
+    color = "#3b82f6";
+
+    good = 30;
+    normal = 80;
+    bad = 150;
+
+    document.getElementById("statusText")
+      .innerHTML = `
+        <b>PM10 기준</b><br>
+        좋음 : 0~30<br>
+        보통 : 31~80<br>
+        나쁨 : 81 이상
+      `;
+  }
+
+  else{
+
+    graphData = data.pm25;
+
+    color = "#ef4444";
+
+    good = 15;
+    normal = 35;
+    bad = 75;
+
+    document.getElementById("statusText")
+      .innerHTML = `
+        <b>PM2.5 기준</b><br>
+        좋음 : 0~15<br>
+        보통 : 16~35<br>
+        나쁨 : 36 이상
+      `;
+  }
+
+  const maxValue =
+    Math.max(...graphData);
+
+  const maxIndex =
+    graphData.indexOf(maxValue);
+
+  document.getElementById("maxValueText")
+    .innerText =
+    "하루 최고 수치 : "
+    + maxValue
+    + " μm/m²";
+
+  const pointColors =
+    graphData.map(()=>color);
+
+  const pointBorders =
+    graphData.map(()=>"#ffffff");
+
+  pointColors[maxIndex] =
+    "#7c3aed";
+
+  pointBorders[maxIndex] =
+    "#000000";
+
+  chart.data.datasets[0].label =
+    currentMode.toUpperCase();
+
+  chart.data.datasets[0].data =
+    graphData;
+
+  chart.data.datasets[0].borderColor =
+    color;
+
+  chart.data.datasets[0].backgroundColor =
+    color;
+
+  chart.data.datasets[0].pointBackgroundColor =
+    pointColors;
+
+  chart.data.datasets[0].pointBorderColor =
+    pointBorders;
+
+  chart.data.datasets[1].data =
+    [good,good,good,good,good,good,good];
+
+  chart.data.datasets[1].borderColor =
+    "#22c55e";
+
+  chart.data.datasets[2].data =
+    [normal,normal,normal,normal,normal,normal,normal];
+
+  chart.data.datasets[2].borderColor =
+    "#f59e0b";
+
+  chart.data.datasets[3].data =
+    [bad,bad,bad,bad,bad,bad,bad];
+
+  chart.data.datasets[3].borderColor =
+    "#ef4444";
+
+  chart.data.datasets[4].data =
+    [
+      maxValue,
+      maxValue,
+      maxValue,
+      maxValue,
+      maxValue,
+      maxValue,
+      maxValue
+    ];
+
+  chart.update();
+
+  renderTable(data);
+
+}
+
+// =====================
+// 표 생성
+// =====================
+
+function renderTable(data){
+
+  const table =
+    document.getElementById("dataTable");
+
+  table.innerHTML = "";
+
+  periods.forEach((period,index)=>{
+
+    const row =
+      document.createElement("tr");
+
+    row.innerHTML = `
+
+      <td>${period}</td>
+
+      <td>
+        <input
+          type="number"
+          value="${data.pm10[index]}"
+          onchange="editPM10(${index}, this.value)"
+        >
+      </td>
+
+      <td>
+        <input
+          type="number"
+          value="${data.pm25[index]}"
+          onchange="editPM25(${index}, this.value)"
+        >
+      </td>
+
+    `;
+
+    table.appendChild(row);
+
+  });
+
+}
+
+// =====================
+// PM10 수정
+// =====================
+
+function editPM10(index, value){
+
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
+
+  if(password === null){
+
+    loadDateData();
+
+    return;
+  }
+
+  if(password !== ADMIN_PASSWORD){
+
+    alert("비밀번호가 틀렸습니다.");
+
+    loadDateData();
+
+    return;
+  }
+
+  const date =
+    document.getElementById("dateSelector")
+    .value;
+
+  allData[date].pm10[index] =
+    Number(value);
+
+  localStorage.setItem(
+    "allData",
+    JSON.stringify(allData)
+  );
+
+  loadDateData();
+
+}
+
+// =====================
+// PM2.5 수정
+// =====================
+
+function editPM25(index, value){
+
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
+
+  if(password === null){
+
+    loadDateData();
+
+    return;
+  }
+
+  if(password !== ADMIN_PASSWORD){
+
+    alert("비밀번호가 틀렸습니다.");
+
+    loadDateData();
+
+    return;
+  }
+
+  const date =
+    document.getElementById("dateSelector")
+    .value;
+
+  allData[date].pm25[index] =
+    Number(value);
+
+  localStorage.setItem(
+    "allData",
+    JSON.stringify(allData)
+  );
+
+  loadDateData();
+
+}
+
+// =====================
+// 시작
+// =====================
+
+renderInfo();
+
+loadDateData();
+
+</script>
+
+</body>
+</html>
