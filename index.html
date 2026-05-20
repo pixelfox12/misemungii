@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -33,7 +32,6 @@ nav{
   background:white;
   padding:15px;
   box-shadow:0 2px 5px rgba(0,0,0,0.1);
-  flex-wrap:wrap;
 }
 
 nav button{
@@ -48,7 +46,7 @@ nav button{
 
 .page{
   display:none;
-  padding:20px;
+  padding:25px;
   max-width:1200px;
   margin:auto;
 }
@@ -109,7 +107,6 @@ input{
   padding:10px;
   width:100%;
   box-sizing:border-box;
-  font-size:16px;
 }
 
 table{
@@ -161,7 +158,6 @@ td input:focus{
 
 canvas{
   margin-top:30px;
-  max-width:100%;
 }
 
 .info-block{
@@ -178,41 +174,23 @@ canvas{
   font-size:13px;
 }
 
-@media(max-width:700px){
-
-  table{
-    font-size:13px;
-  }
-
-  nav button{
-    width:100%;
-  }
-
-  .mode-buttons button{
-    width:100%;
-  }
-
-}
-
 </style>
-
 </head>
-
 <body>
 
 <header>
-미세먼지 관리 시스템
+  미세먼지 관리 시스템
 </header>
 
 <nav>
 
-<button onclick="showPage('infoPage')">
-미세먼지 정보
-</button>
+  <button onclick="showPage('infoPage')">
+    미세먼지 정보
+  </button>
 
-<button onclick="showPage('graphPage')">
-날짜별 그래프
-</button>
+  <button onclick="showPage('graphPage')">
+    날짜별 그래프
+  </button>
 
 </nav>
 
@@ -220,63 +198,63 @@ canvas{
 
 <div id="infoPage" class="page active">
 
-<div class="card">
+  <div class="card">
 
-<div
-style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-flex-wrap:wrap;
-gap:10px;
-"
->
+    <div
+      style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        flex-wrap:wrap;
+        gap:10px;
+      "
+    >
 
-<h2>미세먼지 정보</h2>
+      <h2>미세먼지 정보</h2>
 
-<div
-style="
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-"
->
+      <div
+        style="
+          display:flex;
+          gap:10px;
+          flex-wrap:wrap;
+        "
+      >
 
-<button
-class="toggle-btn"
-onclick="addInfoBlock()"
->
-정보 추가
-</button>
+        <button
+          class="toggle-btn"
+          onclick="addInfoBlock()"
+        >
+          정보 추가
+        </button>
 
-<button
-class="toggle-btn"
-onclick="toggleInfoEdit()"
->
-정보 수정 열기
-</button>
+        <button
+          class="toggle-btn"
+          onclick="toggleInfoEdit()"
+        >
+          정보 수정 열기
+        </button>
 
-</div>
+      </div>
 
-</div>
+    </div>
 
-<div id="infoDisplay"></div>
+    <div id="infoDisplay"></div>
 
-<div id="infoEditSection">
+    <div id="infoEditSection">
 
-<div id="infoEditContainer"></div>
+      <div id="infoEditContainer"></div>
 
-<button
-class="toggle-btn"
-style="margin-top:15px;"
-onclick="saveInfo()"
->
-정보 저장
-</button>
+      <button
+        class="toggle-btn"
+        style="margin-top:15px;"
+        onclick="saveInfo()"
+      >
+        정보 저장
+      </button>
 
-</div>
+    </div>
 
-</div>
+  </div>
 
 </div>
 
@@ -284,101 +262,94 @@ onclick="saveInfo()"
 
 <div id="graphPage" class="page">
 
-<div class="card">
+  <div class="card">
 
-<h2>날짜별 미세먼지 그래프</h2>
+    <h2>날짜별 미세먼지 그래프</h2>
 
-<div class="top-area">
+    <div class="top-area">
 
-<label>날짜 선택:</label>
+      <label>날짜 선택:</label>
 
-<input
-type="date"
-id="dateSelector"
-style="width:auto;"
->
+      <input
+        type="date"
+        id="dateSelector"
+        onchange="loadDateData()"
+        style="width:auto;"
+      >
 
-<button
-class="toggle-btn"
-onclick="toggleEdit()"
->
-데이터 수정 열기
-</button>
+      <button
+        class="toggle-btn"
+        onclick="toggleEdit()"
+      >
+        데이터 수정 열기
+      </button>
 
-</div>
+    </div>
 
-<div class="mode-buttons">
+    <div class="mode-buttons">
 
-<button
-class="pm10-btn"
-onclick="changeMode('pm10')"
->
-PM10 그래프
-</button>
+      <button
+        class="pm10-btn"
+        onclick="changeMode('pm10')"
+      >
+        PM10 그래프
+      </button>
 
-<button
-class="pm25-btn"
-onclick="changeMode('pm25')"
->
-PM2.5 그래프
-</button>
+      <button
+        class="pm25-btn"
+        onclick="changeMode('pm25')"
+      >
+        PM2.5 그래프
+      </button>
 
-</div>
+    </div>
 
-<div class="status-box" id="statusText"></div>
+    <div class="status-box" id="statusText"></div>
 
-<div class="max-value" id="maxValueText"></div>
+    <div class="max-value" id="maxValueText"></div>
 
-<div id="editSection">
+    <div id="editSection">
 
-<table>
+      <table>
 
-<thead>
+        <thead>
 
-<tr>
+          <tr>
 
-<th>교시</th>
-<th>PM10 (μm/m²)</th>
-<th>PM2.5 (μm/m²)</th>
+            <th>교시</th>
 
-</tr>
+            <th>PM10 (μm/m²)</th>
 
-</thead>
+            <th>PM2.5 (μm/m²)</th>
 
-<tbody id="dataTable"></tbody>
+          </tr>
 
-</table>
+        </thead>
 
-</div>
+        <tbody id="dataTable"></tbody>
 
-<canvas id="chart"></canvas>
+      </table>
 
-</div>
+    </div>
+
+    <canvas id="chart"></canvas>
+
+  </div>
 
 </div>
 
 <script type="module">
 
-window.addEventListener("DOMContentLoaded", async ()=>{
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-const firebaseAppModule =
-await import(
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
-);
-
-const firestoreModule =
-await import(
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
-);
-
-const { initializeApp } = firebaseAppModule;
-
-const {
-getFirestore,
-doc,
-setDoc,
-getDoc
-} = firestoreModule;
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // =====================
 // Firebase 설정
@@ -386,25 +357,25 @@ getDoc
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyDsKHz85KFmbPueMNs8Qm-RHfKoHY_l54A",
+  apiKey: "AIzaSyDsKHz85KFmbPueMNs8Qm-RHfKoHY_l54A",
 
-authDomain: "misemungii.firebaseapp.com",
+  authDomain: "misemungii.firebaseapp.com",
 
-projectId: "misemungii",
+  projectId: "misemungii",
 
-storageBucket: "misemungii.firebasestorage.app",
+  storageBucket: "misemungii.firebasestorage.app",
 
-messagingSenderId: "371093688334",
+  messagingSenderId: "371093688334",
 
-appId: "1:371093688334:web:1687c52892c35de1e4ec5f"
+  appId: "1:371093688334:web:1687c52892c35de1e4ec5f"
 
 };
 
 const app =
-initializeApp(firebaseConfig);
+  initializeApp(firebaseConfig);
 
 const db =
-getFirestore(app);
+  getFirestore(app);
 
 // =====================
 // 비밀번호
@@ -416,43 +387,55 @@ const ADMIN_PASSWORD = "1234";
 // 페이지 전환
 // =====================
 
+
+
 window.showPage =
 function(pageId){
 
-document.querySelectorAll(".page")
-.forEach(page=>{
-page.classList.remove("active");
-});
+  document.querySelectorAll(".page")
+    .forEach(page=>{
+      page.classList.remove("active");
+    });
 
-document.getElementById(pageId)
-.classList.add("active");
+  document.getElementById(pageId)
+    .classList.add("active");
 
 }
 
 // =====================
-// 데이터
+// 기본 데이터
 // =====================
 
 let infoData = [
 
-{
-title:"미세먼지란?",
-content:"미세먼지는 공기 중에 떠다니는 작은 먼지 입자이다."
-},
+  {
+    title:"미세먼지란?",
+    content:"미세먼지는 공기 중에 떠다니는 작은 먼지 입자이다."
+  },
 
-{
-title:"PM10",
-content:"PM10은 미세먼지를 의미한다."
-},
+  {
+    title:"PM10",
+    content:"PM10은 미세먼지를 의미한다."
+  },
 
-{
-title:"PM2.5",
-content:"PM2.5는 초미세먼지를 의미한다."
-}
+  {
+    title:"PM2.5",
+    content:"PM2.5는 초미세먼지를 의미한다."
+  }
 
 ];
 
-const allData = {};
+const allData = {
+
+  "2026-05-13": {
+
+    pm10:[42,38,50,61,58,47,39],
+
+    pm25:[21,19,30,35,32,25,20]
+
+  }
+
+};
 
 // =====================
 // Firebase 저장
@@ -460,16 +443,16 @@ const allData = {};
 
 async function saveAllData(){
 
-await setDoc(
+  await setDoc(
 
-doc(db, "dustData", "main"),
+    doc(db, "dustData", "main"),
 
-{
-infoData: infoData,
-allData: allData
-}
+    {
+      infoData: infoData,
+      allData: allData
+    }
 
-);
+  );
 
 }
 
@@ -479,232 +462,244 @@ allData: allData
 
 async function loadAllData(){
 
-const snapshot =
-await getDoc(
-doc(db, "dustData", "main")
-);
+  const snapshot =
+    await getDoc(
+      doc(db, "dustData", "main")
+    );
 
-if(snapshot.exists()){
+  if(snapshot.exists()){
 
-const data =
-snapshot.data();
+    const data =
+      snapshot.data();
 
-if(data.infoData){
-infoData = data.infoData;
-}
+    if(data.infoData){
+      infoData = data.infoData;
+    }
 
-if(data.allData){
+    if(data.allData){
 
-Object.assign(
-allData,
-data.allData
-);
+      Object.assign(
+        allData,
+        data.allData
+      );
 
-}
+    }
 
-}
+  }
 
-renderInfo();
+  renderInfo();
 
-loadDateData();
+  loadDateData();
 
 }
 
 // =====================
-// 정보 렌더링
+// 정보 표시
 // =====================
 
 function renderInfo(){
 
-const display =
-document.getElementById("infoDisplay");
+  const display =
+    document.getElementById("infoDisplay");
 
-const editContainer =
-document.getElementById("infoEditContainer");
+  const editContainer =
+    document.getElementById("infoEditContainer");
 
-display.innerHTML = "";
-editContainer.innerHTML = "";
+  display.innerHTML = "";
+  editContainer.innerHTML = "";
 
-infoData.forEach((info,index)=>{
+  infoData.forEach((info,index)=>{
 
-const block =
-document.createElement("div");
+    const block =
+      document.createElement("div");
 
-block.className = "info-block";
+    block.className = "info-block";
 
-block.innerHTML = `
+    block.innerHTML = `
 
-<div
-style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
-flex-wrap:wrap;
-"
->
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          gap:10px;
+          flex-wrap:wrap;
+        "
+      >
 
-<h3>${info.title}</h3>
+        <h3>${info.title}</h3>
 
-${
-document.getElementById("infoEditSection")
-.style.display === "block"
+        ${
+          document.getElementById("infoEditSection")
+          .style.display === "block"
 
-?
+          ?
 
-`
-<button
-class="delete-btn"
-onclick="deleteInfoBlock(${index})"
->
-삭제
-</button>
-`
+          `
+          <button
+            class="delete-btn"
+            onclick="deleteInfoBlock(${index})"
+          >
+            삭제
+          </button>
+          `
 
-:
+          :
 
-""
+          ""
 
-}
+        }
 
-</div>
+      </div>
 
-<p>${info.content}</p>
+      <p>${info.content}</p>
 
-`;
+    `;
 
-display.appendChild(block);
+    display.appendChild(block);
 
-const editBlock =
-document.createElement("table");
+    const editBlock =
+      document.createElement("table");
 
-editBlock.style.marginBottom = "20px";
+    editBlock.style.marginBottom = "20px";
 
-editBlock.innerHTML = `
+    editBlock.innerHTML = `
 
-<tr>
-<th>제목</th>
-<td>
-<input
-type="text"
-id="editTitle${index}"
-value="${info.title}"
->
-</td>
-</tr>
+      <tr>
+        <th>제목</th>
+        <td>
+          <input
+            type="text"
+            id="editTitle${index}"
+            value="${info.title}"
+          >
+        </td>
+      </tr>
 
-<tr>
-<th>내용</th>
-<td>
-<input
-type="text"
-id="editContent${index}"
-value="${info.content}"
->
-</td>
-</tr>
+      <tr>
+        <th>내용</th>
+        <td>
+          <input
+            type="text"
+            id="editContent${index}"
+            value="${info.content}"
+          >
+        </td>
+      </tr>
 
-`;
+    `;
 
-editContainer.appendChild(editBlock);
+    editContainer.appendChild(editBlock);
 
-});
+  });
 
 }
 
 // =====================
-// 정보 수정
+// 정보 삭제
+// =====================
+
+window.deleteInfoBlock =
+async function(index){
+
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
+
+  if(password !== ADMIN_PASSWORD){
+    alert("비밀번호가 틀렸습니다.");
+    return;
+  }
+
+  infoData.splice(index,1);
+
+  await saveAllData();
+
+  renderInfo();
+
+}
+
+// =====================
+// 정보 수정창
 // =====================
 
 window.toggleInfoEdit =
 function(){
 
-const password =
-prompt("관리자 비밀번호를 입력하세요");
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
 
-if(password !== ADMIN_PASSWORD){
-alert("비밀번호가 틀렸습니다.");
-return;
+  if(password !== ADMIN_PASSWORD){
+    alert("비밀번호가 틀렸습니다.");
+    return;
+  }
+
+  const section =
+    document.getElementById("infoEditSection");
+
+  if(section.style.display === "block"){
+    section.style.display = "none";
+  }
+  else{
+    section.style.display = "block";
+  }
+
+  renderInfo();
+
 }
 
-const section =
-document.getElementById("infoEditSection");
-
-if(section.style.display === "block"){
-section.style.display = "none";
-}
-else{
-section.style.display = "block";
-}
-
-renderInfo();
-
-}
+// =====================
+// 정보 저장
+// =====================
 
 window.saveInfo =
 async function(){
 
-infoData.forEach((info,index)=>{
+  infoData.forEach((info,index)=>{
 
-info.title =
-document.getElementById(`editTitle${index}`)
-.value;
+    info.title =
+      document.getElementById(`editTitle${index}`)
+      .value;
 
-info.content =
-document.getElementById(`editContent${index}`)
-.value;
+    info.content =
+      document.getElementById(`editContent${index}`)
+      .value;
 
-});
+  });
 
-await saveAllData();
+  await saveAllData();
 
-renderInfo();
+  renderInfo();
 
-alert("저장되었습니다.");
+  alert("저장되었습니다.");
 
 }
+
+// =====================
+// 정보 추가
+// =====================
 
 window.addInfoBlock =
 async function(){
 
-const password =
-prompt("관리자 비밀번호를 입력하세요");
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
 
-if(password !== ADMIN_PASSWORD){
-alert("비밀번호가 틀렸습니다.");
-return;
-}
+  if(password !== ADMIN_PASSWORD){
+    alert("비밀번호가 틀렸습니다.");
+    return;
+  }
 
-infoData.push({
+  infoData.push({
 
-title:"새 제목",
+    title:"새 제목",
 
-content:"새 내용을 입력하세요."
+    content:"새 내용을 입력하세요."
 
-});
+  });
 
-await saveAllData();
+  await saveAllData();
 
-renderInfo();
-
-}
-
-window.deleteInfoBlock =
-async function(index){
-
-const password =
-prompt("관리자 비밀번호를 입력하세요");
-
-if(password !== ADMIN_PASSWORD){
-alert("비밀번호가 틀렸습니다.");
-return;
-}
-
-infoData.splice(index,1);
-
-await saveAllData();
-
-renderInfo();
+  renderInfo();
 
 }
 
@@ -715,23 +710,23 @@ renderInfo();
 window.toggleEdit =
 function(){
 
-const password =
-prompt("관리자 비밀번호를 입력하세요");
+  const password =
+    prompt("관리자 비밀번호를 입력하세요");
 
-if(password !== ADMIN_PASSWORD){
-alert("비밀번호가 틀렸습니다.");
-return;
-}
+  if(password !== ADMIN_PASSWORD){
+    alert("비밀번호가 틀렸습니다.");
+    return;
+  }
 
-const section =
-document.getElementById("editSection");
+  const section =
+    document.getElementById("editSection");
 
-if(section.style.display === "block"){
-section.style.display = "none";
-}
-else{
-section.style.display = "block";
-}
+  if(section.style.display === "block"){
+    section.style.display = "none";
+  }
+  else{
+    section.style.display = "block";
+  }
 
 }
 
@@ -742,77 +737,79 @@ section.style.display = "block";
 let currentMode = "pm10";
 
 const periods = [
-"1교시",
-"2교시",
-"3교시",
-"4교시",
-"5교시",
-"6교시",
-"7교시"
+  "1교시",
+  "2교시",
+  "3교시",
+  "4교시",
+  "5교시",
+  "6교시",
+  "7교시"
 ];
 
 document.getElementById("dateSelector")
-.value =
-new Date().toISOString().split("T")[0];
+  .value = "2026-05-13";
 
 const ctx =
-document.getElementById("chart");
+  document.getElementById("chart");
 
 const chart = new Chart(ctx, {
 
-type:"line",
+  type:"line",
 
-data:{
+  data:{
 
-labels:periods,
+    labels:periods,
 
-datasets:[
+    datasets:[
 
-{
-label:"",
-data:[],
-borderWidth:3,
-tension:0.2,
-pointRadius:6,
-pointHoverRadius:8,
-pointBackgroundColor:[]
-},
+      {
+        label:"",
+        data:[],
+        borderWidth:3,
+        tension:0.2,
+        pointRadius:6,
+        pointHoverRadius:8,
+        pointBackgroundColor:[],
+        pointBorderColor:[],
+        pointBorderWidth:3
+      },
 
-{
-label:"좋음",
-data:[],
-borderDash:[8,8],
-pointRadius:0,
-borderWidth:2
-},
+      {
+        label:"좋음",
+        data:[],
+        borderDash:[8,8],
+        pointRadius:0,
+        borderWidth:2
+      },
 
-{
-label:"보통",
-data:[],
-borderDash:[8,8],
-pointRadius:0,
-borderWidth:2
-},
+      {
+        label:"보통",
+        data:[],
+        borderDash:[8,8],
+        pointRadius:0,
+        borderWidth:2
+      },
 
-{
-label:"나쁨",
-data:[],
-borderDash:[8,8],
-pointRadius:0,
-borderWidth:2
-},
+      {
+        label:"나쁨",
+        data:[],
+        borderDash:[8,8],
+        pointRadius:0,
+        borderWidth:2
+      },
 
-{
-label:"하루 최고 수치",
-data:[],
-borderDash:[5,5],
-pointRadius:0,
-borderWidth:3
-}
+      {
+        label:"하루 최고 수치",
+        data:[],
+        borderColor:"#7c3aed",
+        borderDash:[5,5],
+        pointRadius:0,
+        borderWidth:3
+      }
 
-]
+    ]
 
-}
+  }
 
 });
 
@@ -823,9 +820,9 @@ borderWidth:3
 window.changeMode =
 function(mode){
 
-currentMode = mode;
+  currentMode = mode;
 
-loadDateData();
+  loadDateData();
 
 }
 
@@ -836,230 +833,205 @@ loadDateData();
 window.loadDateData =
 function(){
 
-const selectedDate =
-document.getElementById("dateSelector")
-.value;
+  const selectedDate =
+    document.getElementById("dateSelector")
+    .value;
 
-if(!allData[selectedDate]){
+  if(!allData[selectedDate]){
 
-allData[selectedDate] = {
+    allData[selectedDate] = {
 
-pm10:[0,0,0,0,0,0,0],
+      pm10:[0,0,0,0,0,0,0],
 
-pm25:[0,0,0,0,0,0,0]
+      pm25:[0,0,0,0,0,0,0]
 
-};
+    };
 
-}
+  }
 
-const data =
-allData[selectedDate];
+  const data =
+    allData[selectedDate];
 
-renderTable(data);
+  let graphData = [];
+  let color = "";
+  let good = 0;
+  let normal = 0;
+  let bad = 0;
 
-updateChartOnly();
+  if(currentMode === "pm10"){
 
-}
+    graphData = data.pm10;
 
-document.getElementById("dateSelector")
-.addEventListener("change", loadDateData);
+    color = "#3b82f6";
 
-// =====================
-// 그래프 업데이트
-// =====================
+    good = 30;
+    normal = 80;
+    bad = 150;
 
-function updateChartOnly(){
+    document.getElementById("statusText")
+      .innerHTML = `
+        <b>PM10 기준</b><br>
+        좋음 : 0~30<br>
+        보통 : 31~80<br>
+        나쁨 : 81 이상
+      `;
+  }
 
-const selectedDate =
-document.getElementById("dateSelector")
-.value;
+  else{
 
-const data =
-allData[selectedDate];
+    graphData = data.pm25;
 
-let graphData = [];
-let color = "";
-let good = 0;
-let normal = 0;
-let bad = 0;
+    color = "#ef4444";
 
-if(currentMode === "pm10"){
+    good = 15;
+    normal = 35;
+    bad = 75;
 
-graphData = data.pm10;
+    document.getElementById("statusText")
+      .innerHTML = `
+        <b>PM2.5 기준</b><br>
+        좋음 : 0~15<br>
+        보통 : 16~35<br>
+        나쁨 : 36 이상
+      `;
+  }
 
-color = "#3b82f6";
+  const maxValue =
+    Math.max(...graphData);
 
-good = 30;
-normal = 80;
-bad = 150;
+  const maxIndex =
+    graphData.indexOf(maxValue);
 
-document.getElementById("statusText")
-.innerHTML = `
-<b>PM10 기준</b><br>
-좋음 : 0~30<br>
-보통 : 31~80<br>
-나쁨 : 81 이상
-`;
+  document.getElementById("maxValueText")
+    .innerText =
+    "하루 최고 수치 : "
+    + maxValue
+    + " μm/m²";
 
-}
+  const pointColors =
+    graphData.map(()=>color);
 
-else{
+  pointColors[maxIndex] =
+    "#7c3aed";
 
-graphData = data.pm25;
+  chart.data.datasets[0].label =
+    currentMode.toUpperCase();
 
-color = "#ef4444";
+  chart.data.datasets[0].data =
+    graphData;
 
-good = 15;
-normal = 35;
-bad = 75;
+  chart.data.datasets[0].borderColor =
+    color;
 
-document.getElementById("statusText")
-.innerHTML = `
-<b>PM2.5 기준</b><br>
-좋음 : 0~15<br>
-보통 : 16~35<br>
-나쁨 : 36 이상
-`;
+  chart.data.datasets[0].backgroundColor =
+    color;
 
-}
+  chart.data.datasets[0].pointBackgroundColor =
+    pointColors;
 
-const maxValue =
-Math.max(...graphData);
+  chart.data.datasets[1].data =
+    [good,good,good,good,good,good,good];
 
-const maxIndex =
-graphData.indexOf(maxValue);
+  chart.data.datasets[1].borderColor =
+    "#22c55e";
 
-document.getElementById("maxValueText")
-.innerText =
-"하루 최고 수치 : "
-+ maxValue
-+ " μm/m²";
+  chart.data.datasets[2].data =
+    [normal,normal,normal,normal,normal,normal,normal];
 
-const pointColors =
-graphData.map(()=>color);
+  chart.data.datasets[2].borderColor =
+    "#f59e0b";
 
-pointColors[maxIndex] =
-"#7c3aed";
+  chart.data.datasets[3].data =
+    [bad,bad,bad,bad,bad,bad,bad];
 
-chart.data.datasets[0].label =
-currentMode.toUpperCase();
+  chart.data.datasets[3].borderColor =
+    "#ef4444";
 
-chart.data.datasets[0].data =
-graphData;
+  chart.data.datasets[4].data =
+    [
+      maxValue,
+      maxValue,
+      maxValue,
+      maxValue,
+      maxValue,
+      maxValue,
+      maxValue
+    ];
 
-chart.data.datasets[0].borderColor =
-color;
+  chart.update();
 
-chart.data.datasets[0].backgroundColor =
-color;
-
-chart.data.datasets[0].pointBackgroundColor =
-pointColors;
-
-chart.data.datasets[1].data =
-[good,good,good,good,good,good,good];
-
-chart.data.datasets[1].borderColor =
-"#22c55e";
-
-chart.data.datasets[2].data =
-[normal,normal,normal,normal,normal,normal,normal];
-
-chart.data.datasets[2].borderColor =
-"#f59e0b";
-
-chart.data.datasets[3].data =
-[bad,bad,bad,bad,bad,bad,bad];
-
-chart.data.datasets[3].borderColor =
-"#ef4444";
-
-chart.data.datasets[4].data =
-[
-maxValue,
-maxValue,
-maxValue,
-maxValue,
-maxValue,
-maxValue,
-maxValue
-];
-
-chart.data.datasets[4].borderColor =
-"#7c3aed";
-
-chart.update();
+  renderTable(data);
 
 }
 
 // =====================
-// 표 렌더링
+// 표 생성
 // =====================
 
 function renderTable(data){
 
-const table =
-document.getElementById("dataTable");
+  const table =
+    document.getElementById("dataTable");
 
-table.innerHTML = "";
+  table.innerHTML = "";
 
-periods.forEach((period,index)=>{
+  periods.forEach((period,index)=>{
 
-const row =
-document.createElement("tr");
+    const row =
+      document.createElement("tr");
 
-row.innerHTML = `
+    row.innerHTML = `
 
-<td>${period}</td>
+      <td>${period}</td>
 
-<td>
-<input
-type="number"
-value="${data.pm10[index]}"
-onchange="editPM10(${index}, this.value)"
->
-</td>
+      <td>
+        <input
+          type="number"
+          value="${data.pm10[index]}"
+          onchange="editPM10(${index}, this.value)"
+        >
+      </td>
 
-<td>
-<input
-type="number"
-value="${data.pm25[index]}"
-onchange="editPM25(${index}, this.value)"
->
-</td>
+      <td>
+        <input
+          type="number"
+          value="${data.pm25[index]}"
+          onchange="editPM25(${index}, this.value)"
+        >
+      </td>
 
-`;
+    `;
 
-table.appendChild(row);
+    table.appendChild(row);
 
-});
+  });
 
 }
 
-// =====================
-// PM10 수정
-// =====================
+<!-- =====================
+PM10 수정
+===================== -->
 
 window.editPM10 =
 async function(index, value){
 
-const section =
-document.getElementById("editSection");
+  const section =
+    document.getElementById("editSection");
 
-if(section.style.display !== "block"){
-return;
-}
+  if(section.style.display !== "block"){
+    return;
+  }
 
-const date =
-document.getElementById("dateSelector")
-.value;
+  const date =
+    document.getElementById("dateSelector")
+    .value;
 
-allData[date].pm10[index] =
-Number(value);
+  allData[date].pm10[index] =
+    Number(value);
 
-await saveAllData();
+  await saveAllData();
 
-updateChartOnly();
+  loadDateData();
 
 }
 
@@ -1070,23 +1042,23 @@ updateChartOnly();
 window.editPM25 =
 async function(index, value){
 
-const section =
-document.getElementById("editSection");
+  const section =
+    document.getElementById("editSection");
 
-if(section.style.display !== "block"){
-return;
-}
+  if(section.style.display !== "block"){
+    return;
+  }
 
-const date =
-document.getElementById("dateSelector")
-.value;
+  const date =
+    document.getElementById("dateSelector")
+    .value;
 
-allData[date].pm25[index] =
-Number(value);
+  allData[date].pm25[index] =
+    Number(value);
 
-await saveAllData();
+  await saveAllData();
 
-updateChartOnly();
+  loadDateData();
 
 }
 
@@ -1095,8 +1067,6 @@ updateChartOnly();
 // =====================
 
 loadAllData();
-
-});
 
 </script>
 
