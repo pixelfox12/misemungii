@@ -351,6 +351,10 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// =====================
+// Firebase 설정
+// =====================
+
 const firebaseConfig = {
 
   apiKey: "AIzaSyDsKHz85KFmbPueMNs8Qm-RHfKoHY_l54A",
@@ -373,7 +377,17 @@ const app =
 const db =
   getFirestore(app);
 
+// =====================
+// 비밀번호
+// =====================
+
 const ADMIN_PASSWORD = "1234";
+
+// =====================
+// 페이지 전환
+// =====================
+
+
 
 window.showPage =
 function(pageId){
@@ -387,6 +401,10 @@ function(pageId){
     .classList.add("active");
 
 }
+
+// =====================
+// 기본 데이터
+// =====================
 
 let infoData = [
 
@@ -407,7 +425,21 @@ let infoData = [
 
 ];
 
-const allData = {};
+const allData = {
+
+  "2026-05-13": {
+
+    pm10:[42,38,50,61,58,47,39],
+
+    pm25:[21,19,30,35,32,25,20]
+
+  }
+
+};
+
+// =====================
+// Firebase 저장
+// =====================
 
 async function saveAllData(){
 
@@ -423,6 +455,10 @@ async function saveAllData(){
   );
 
 }
+
+// =====================
+// Firebase 불러오기
+// =====================
 
 async function loadAllData(){
 
@@ -456,6 +492,10 @@ async function loadAllData(){
   loadDateData();
 
 }
+
+// =====================
+// 정보 표시
+// =====================
 
 function renderInfo(){
 
@@ -555,6 +595,10 @@ function renderInfo(){
 
 }
 
+// =====================
+// 정보 삭제
+// =====================
+
 window.deleteInfoBlock =
 async function(index){
 
@@ -573,6 +617,10 @@ async function(index){
   renderInfo();
 
 }
+
+// =====================
+// 정보 수정창
+// =====================
 
 window.toggleInfoEdit =
 function(){
@@ -599,6 +647,10 @@ function(){
 
 }
 
+// =====================
+// 정보 저장
+// =====================
+
 window.saveInfo =
 async function(){
 
@@ -621,6 +673,10 @@ async function(){
   alert("저장되었습니다.");
 
 }
+
+// =====================
+// 정보 추가
+// =====================
 
 window.addInfoBlock =
 async function(){
@@ -647,6 +703,10 @@ async function(){
 
 }
 
+// =====================
+// 데이터 수정창
+// =====================
+
 window.toggleEdit =
 function(){
 
@@ -670,6 +730,10 @@ function(){
 
 }
 
+// =====================
+// 그래프
+// =====================
+
 let currentMode = "pm10";
 
 const periods = [
@@ -683,8 +747,7 @@ const periods = [
 ];
 
 document.getElementById("dateSelector")
-  .value =
-  new Date().toISOString().split("T")[0];
+  .value = "2026-05-13";
 
 const ctx =
   document.getElementById("chart");
@@ -707,6 +770,7 @@ const chart = new Chart(ctx, {
         pointRadius:6,
         pointHoverRadius:8,
         pointBackgroundColor:[],
+        pointBorderColor:[],
         pointBorderWidth:3
       },
 
@@ -737,6 +801,7 @@ const chart = new Chart(ctx, {
       {
         label:"하루 최고 수치",
         data:[],
+        borderColor:"#7c3aed",
         borderDash:[5,5],
         pointRadius:0,
         borderWidth:3
@@ -748,6 +813,10 @@ const chart = new Chart(ctx, {
 
 });
 
+// =====================
+// 모드 변경
+// =====================
+
 window.changeMode =
 function(mode){
 
@@ -756,6 +825,10 @@ function(mode){
   loadDateData();
 
 }
+
+// =====================
+// 날짜 데이터
+// =====================
 
 window.loadDateData =
 function(){
@@ -885,14 +958,15 @@ function(){
       maxValue
     ];
 
-  chart.data.datasets[4].borderColor =
-    "#7c3aed";
-
   chart.update();
 
   renderTable(data);
 
 }
+
+// =====================
+// 표 생성
+// =====================
 
 function renderTable(data){
 
@@ -934,6 +1008,10 @@ function renderTable(data){
 
 }
 
+// =====================
+// PM10 수정
+// =====================
+
 window.editPM10 =
 async function(index, value){
 
@@ -959,6 +1037,10 @@ async function(index, value){
 
 }
 
+// =====================
+// PM2.5 수정
+// =====================
+
 window.editPM25 =
 async function(index, value){
 
@@ -983,6 +1065,10 @@ async function(index, value){
   loadDateData();
 
 }
+
+// =====================
+// 시작
+// =====================
 
 loadAllData();
 
