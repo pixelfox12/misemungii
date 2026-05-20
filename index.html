@@ -338,7 +338,44 @@ canvas{
 
 </div>
 
-<script>
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// =====================
+// Firebase 설정
+// =====================
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDsKHz85KFmbPueMNs8Qm-RHfKoHY_l54A",
+
+  authDomain: "misemungii.firebaseapp.com",
+
+  projectId: "misemungii",
+
+  storageBucket: "misemungii.firebasestorage.app",
+
+  messagingSenderId: "371093688334",
+
+  appId: "1:371093688334:web:1687c52892c35de1e4ec5f"
+
+};
+
+const app =
+  initializeApp(firebaseConfig);
+
+const db =
+  getFirestore(app);
 
 // =====================
 // 비밀번호
@@ -362,30 +399,95 @@ function showPage(pageId){
 }
 
 // =====================
-// 정보 데이터
+// 기본 데이터
 // =====================
 
-let infoData =
-  JSON.parse(localStorage.getItem("infoData"))
-  ||
-  [
+let infoData = [
+
+  {
+    title:"미세먼지란?",
+    content:"미세먼지는 공기 중에 떠다니는 작은 먼지 입자이다."
+  },
+
+  {
+    title:"PM10",
+    content:"PM10은 미세먼지를 의미한다."
+  },
+
+  {
+    title:"PM2.5",
+    content:"PM2.5는 초미세먼지를 의미한다."
+  }
+
+];
+
+const allData = {
+
+  "2026-05-13": {
+
+    pm10:[42,38,50,61,58,47,39],
+
+    pm25:[21,19,30,35,32,25,20]
+
+  }
+
+};
+
+// =====================
+// Firebase 저장
+// =====================
+
+async function saveAllData(){
+
+  await setDoc(
+
+    doc(db, "dustData", "main"),
 
     {
-      title:"미세먼지란?",
-      content:"미세먼지는 공기 중에 떠다니는 작은 먼지 입자이다."
-    },
-
-    {
-      title:"PM10",
-      content:"PM10은 미세먼지를 의미한다."
-    },
-
-    {
-      title:"PM2.5",
-      content:"PM2.5는 초미세먼지를 의미한다."
+      infoData: infoData,
+      allData: allData
     }
 
-  ];
+  );
+
+}
+
+// =====================
+// Firebase 불러오기
+// =====================
+
+async function loadAllData(){
+
+  const snapshot =
+    await getDoc(
+      doc(db, "dustData", "main")
+    );
+
+  if(snapshot.exists()){
+
+    const data =
+      snapshot.data();
+
+    if(data.infoData){
+      infoData = data.infoData;
+    }
+
+    if(data.allData){
+
+      Object.assign(
+        allData,
+        data.allData
+      );
+
+    }
+
+  }
+
+  renderInfo();
+
+  loadDateData();
+
+}
 
 // =====================
 // 정보 표시
@@ -400,7 +502,6 @@ function renderInfo(){
     document.getElementById("infoEditContainer");
 
   display.innerHTML = "";
-
   editContainer.innerHTML = "";
 
   infoData.forEach((info,index)=>{
@@ -431,14 +532,12 @@ function renderInfo(){
           ?
 
           `
-
           <button
             class="delete-btn"
             onclick="deleteInfoBlock(${index})"
           >
             삭제
           </button>
-
           `
 
           :
@@ -463,35 +562,25 @@ function renderInfo(){
     editBlock.innerHTML = `
 
       <tr>
-
         <th>제목</th>
-
         <td>
-
           <input
             type="text"
             id="editTitle${index}"
             value="${info.title}"
           >
-
         </td>
-
       </tr>
 
       <tr>
-
         <th>내용</th>
-
         <td>
-
           <input
             type="text"
             id="editContent${index}"
             value="${info.content}"
           >
-
         </td>
-
       </tr>
 
     `;
@@ -506,35 +595,20 @@ function renderInfo(){
 // 정보 삭제
 // =====================
 
-function deleteInfoBlock(index){
+window.deleteInfoBlock =
+async function(index){
 
   const password =
     prompt("관리자 비밀번호를 입력하세요");
 
-  if(password === null){
-    return;
-  }
-
   if(password !== ADMIN_PASSWORD){
-
     alert("비밀번호가 틀렸습니다.");
-
-    return;
-  }
-
-  const check =
-    confirm("정말 삭제하시겠습니까?");
-
-  if(!check){
     return;
   }
 
   infoData.splice(index,1);
 
-  localStorage.setItem(
-    "infoData",
-    JSON.stringify(infoData)
-  );
+  await saveAllData();
 
   renderInfo();
 
@@ -544,30 +618,25 @@ function deleteInfoBlock(index){
 // 정보 수정창
 // =====================
 
-function toggleInfoEdit(){
+window.toggleInfoEdit =
+function(){
 
   const password =
     prompt("관리자 비밀번호를 입력하세요");
 
-  if(password === null){
-    return;
-  }
-
   if(password !== ADMIN_PASSWORD){
-
     alert("비밀번호가 틀렸습니다.");
-
     return;
   }
 
   const section =
     document.getElementById("infoEditSection");
 
-  if(section.style.display === "none"){
-    section.style.display = "block";
+  if(section.style.display === "block"){
+    section.style.display = "none";
   }
   else{
-    section.style.display = "none";
+    section.style.display = "block";
   }
 
   renderInfo();
@@ -578,7 +647,8 @@ function toggleInfoEdit(){
 // 정보 저장
 // =====================
 
-function saveInfo(){
+window.saveInfo =
+async function(){
 
   infoData.forEach((info,index)=>{
 
@@ -592,21 +662,11 @@ function saveInfo(){
 
   });
 
-  localStorage.setItem(
-    "infoData",
-    JSON.stringify(infoData)
-  );
+  await saveAllData();
 
   renderInfo();
 
-  if(
-    document.getElementById("infoEditSection")
-    .style.display === "block"
-  ){
-    renderInfo();
-  }
-
-  alert("정보가 저장되었습니다.");
+  alert("저장되었습니다.");
 
 }
 
@@ -614,34 +674,26 @@ function saveInfo(){
 // 정보 추가
 // =====================
 
-function addInfoBlock(){
+window.addInfoBlock =
+async function(){
 
   const password =
     prompt("관리자 비밀번호를 입력하세요");
 
-  if(password === null){
-    return;
-  }
-
   if(password !== ADMIN_PASSWORD){
-
     alert("비밀번호가 틀렸습니다.");
-
     return;
   }
 
   infoData.push({
 
-    title:"새로운 제목",
+    title:"새 제목",
 
-    content:"새로운 내용을 입력하세요."
+    content:"새 내용을 입력하세요."
 
   });
 
-  localStorage.setItem(
-    "infoData",
-    JSON.stringify(infoData)
-  );
+  await saveAllData();
 
   renderInfo();
 
@@ -651,43 +703,34 @@ function addInfoBlock(){
 // 데이터 수정창
 // =====================
 
-function toggleEdit(){
+window.toggleEdit =
+function(){
 
   const password =
     prompt("관리자 비밀번호를 입력하세요");
 
-  if(password === null){
-    return;
-  }
-
   if(password !== ADMIN_PASSWORD){
-
     alert("비밀번호가 틀렸습니다.");
-
     return;
   }
 
   const section =
     document.getElementById("editSection");
 
-  if(section.style.display === "none"){
-    section.style.display = "block";
+  if(section.style.display === "block"){
+    section.style.display = "none";
   }
   else{
-    section.style.display = "none";
+    section.style.display = "block";
   }
 
 }
 
 // =====================
-// 현재 모드
+// 그래프
 // =====================
 
 let currentMode = "pm10";
-
-// =====================
-// 교시
-// =====================
 
 const periods = [
   "1교시",
@@ -699,35 +742,8 @@ const periods = [
   "7교시"
 ];
 
-// =====================
-// 데이터
-// =====================
-
-const allData =
-  JSON.parse(localStorage.getItem("allData"))
-  ||
-  {
-
-    "2026-05-13": {
-
-      pm10:[42,38,50,61,58,47,39],
-
-      pm25:[21,19,30,35,32,25,20]
-
-    }
-
-  };
-
-// =====================
-// 날짜 기본값
-// =====================
-
 document.getElementById("dateSelector")
   .value = "2026-05-13";
-
-// =====================
-// 그래프
-// =====================
 
 const ctx =
   document.getElementById("chart");
@@ -747,10 +763,8 @@ const chart = new Chart(ctx, {
         data:[],
         borderWidth:3,
         tension:0.2,
-
         pointRadius:6,
         pointHoverRadius:8,
-
         pointBackgroundColor:[],
         pointBorderColor:[],
         pointBorderWidth:3
@@ -791,38 +805,16 @@ const chart = new Chart(ctx, {
 
     ]
 
-  },
-
-  options:{
-
-    responsive:true,
-
-    scales:{
-
-      y:{
-
-        beginAtZero:true,
-
-        suggestedMax:160,
-
-        title:{
-          display:true,
-          text:"농도 (μm/m²)"
-        }
-
-      }
-
-    }
-
   }
 
 });
 
 // =====================
-// 그래프 변경
+// 모드 변경
 // =====================
 
-function changeMode(mode){
+window.changeMode =
+function(mode){
 
   currentMode = mode;
 
@@ -831,10 +823,11 @@ function changeMode(mode){
 }
 
 // =====================
-// 데이터 불러오기
+// 날짜 데이터
 // =====================
 
-function loadDateData(){
+window.loadDateData =
+function(){
 
   const selectedDate =
     document.getElementById("dateSelector")
@@ -914,14 +907,8 @@ function loadDateData(){
   const pointColors =
     graphData.map(()=>color);
 
-  const pointBorders =
-    graphData.map(()=>"#ffffff");
-
   pointColors[maxIndex] =
     "#7c3aed";
-
-  pointBorders[maxIndex] =
-    "#000000";
 
   chart.data.datasets[0].label =
     currentMode.toUpperCase();
@@ -937,9 +924,6 @@ function loadDateData(){
 
   chart.data.datasets[0].pointBackgroundColor =
     pointColors;
-
-  chart.data.datasets[0].pointBorderColor =
-    pointBorders;
 
   chart.data.datasets[1].data =
     [good,good,good,good,good,good,good];
@@ -1024,24 +1008,15 @@ function renderTable(data){
 // PM10 수정
 // =====================
 
-function editPM10(index, value){
+window.editPM10 =
+async function(index, value){
 
   const password =
     prompt("관리자 비밀번호를 입력하세요");
 
-  if(password === null){
-
-    loadDateData();
-
-    return;
-  }
-
   if(password !== ADMIN_PASSWORD){
-
     alert("비밀번호가 틀렸습니다.");
-
     loadDateData();
-
     return;
   }
 
@@ -1052,10 +1027,7 @@ function editPM10(index, value){
   allData[date].pm10[index] =
     Number(value);
 
-  localStorage.setItem(
-    "allData",
-    JSON.stringify(allData)
-  );
+  await saveAllData();
 
   loadDateData();
 
@@ -1065,24 +1037,15 @@ function editPM10(index, value){
 // PM2.5 수정
 // =====================
 
-function editPM25(index, value){
+window.editPM25 =
+async function(index, value){
 
   const password =
     prompt("관리자 비밀번호를 입력하세요");
 
-  if(password === null){
-
-    loadDateData();
-
-    return;
-  }
-
   if(password !== ADMIN_PASSWORD){
-
     alert("비밀번호가 틀렸습니다.");
-
     loadDateData();
-
     return;
   }
 
@@ -1093,10 +1056,7 @@ function editPM25(index, value){
   allData[date].pm25[index] =
     Number(value);
 
-  localStorage.setItem(
-    "allData",
-    JSON.stringify(allData)
-  );
+  await saveAllData();
 
   loadDateData();
 
@@ -1106,9 +1066,7 @@ function editPM25(index, value){
 // 시작
 // =====================
 
-renderInfo();
-
-loadDateData();
+loadAllData();
 
 </script>
 
